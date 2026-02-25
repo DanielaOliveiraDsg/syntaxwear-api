@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String?
+  phone        String?
+  birthDate    DateTime?
+  cpf          String?   @unique
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  carts        Cart[]
+  orders       Order[]
+  addresses    Address[]
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  postal    String
+  country   String   @default("US")
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  parentId  String?
+  parent    Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryChildren")
+  products  Product[]
+  createdAt DateTime   @default(now())
+}
+
+model Product {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?
+  brand       String?
+  currency    String       @default("USD")
+  images      String[] // URLs
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  skus        ProductSKU[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model ProductSKU {
+  id         String     @id @default(cuid())
+  product    Product    @relation(fields: [productId], references: [id])
+  productId  String
+  sku        String     @unique
+  size       String
+  color      String
+  priceCents Int
+  stock      Int        @default(0)
+  barcode    String?    @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  cartItems  CartItem[]
+
+  @@index([productId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id       String     @id @default(cuid())
+  cart     Cart       @relation(fields: [cartId], references: [id])
+  cartId   String
+  sku      ProductSKU @relation(fields: [skuId], references: [id])
+  skuId    String
+  quantity Int
+  addedAt  DateTime   @default(now())
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  user           User        @relation(fields: [userId], references: [id])
+  userId         String
+  status         String
+  totalCents     Int
+  currency       String      @default("USD")
+  items          OrderItem[]
+  paymentId      String?
+  shippingAddr   Address?    @relation(fields: [shippingAddrId], references: [id])
+  shippingAddrId String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  payments       Payment[]
+}
+
+model OrderItem {
+  id          String @id @default(cuid())
+  order       Order  @relation(fields: [orderId], references: [id])
+  orderId     String
+  skuId       String
+  skuSnapshot Json
+  quantity    Int
+  priceCents  Int
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  order       Order    @relation(fields: [orderId], references: [id])
+  orderId     String
+  provider    String
+  providerId  String
+  amountCents Int
+  currency    String
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

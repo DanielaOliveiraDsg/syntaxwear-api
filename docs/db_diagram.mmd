@@ -1,0 +1,10 @@
+erDiagram
+  USER ||--o{ CART : owns
+  USER ||--o{ ORDER : places
+  USER ||--o{ ADDRESS : has
+  CART ||--o{ CARTITEM : contains
+  PRODUCT ||--o{ PRODUCTSKU : has
+  CARTITEM }o--|| PRODUCTSKU : references
+  ORDER ||--o{ ORDERITEM : contains
+  ORDERITEM }o--|| PRODUCTSKU : snapshot
+  CATEGORY ||--o{ PRODUCT : contains
