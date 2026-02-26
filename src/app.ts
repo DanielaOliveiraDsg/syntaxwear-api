@@ -1,12 +1,11 @@
 // Require the framework and instantiate it
 
 // ESM
-import Fastify from "fastify";
 import "dotenv/config";
+import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import { version } from "node:os";
-import { timeStamp } from "node:console";
+import productRoutes from "./routes/products.routes";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
@@ -24,6 +23,8 @@ fastify.register(cors, {
 fastify.register(helmet, {
   contentSecurityPolicy: false,
 });
+
+fastify.register(productRoutes, { prefix: "/products" });
 
 // Declare a route
 fastify.get("/", async (request, reply) => {
@@ -44,7 +45,7 @@ fastify.get("/health", async (request, reply) => {
 });
 
 // Run the server!
-fastify.listen({ port: PORT }, function (err, address) {
+fastify.listen({ port: PORT, host: "0.0.0.0" }, function (err, address) {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
