@@ -6,6 +6,8 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import productRoutes from "./routes/products.routes";
+import swagger from "@fastify/swagger";
+import scalar from "@scalar/fastify-api-reference";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
@@ -23,6 +25,40 @@ fastify.register(cors, {
 fastify.register(helmet, {
   contentSecurityPolicy: false,
 });
+
+fastify.register(swagger, {
+  openapi: {
+    openapi: "3.0.0",
+    info: {
+      title: "SyntaxWear E-commerce API",
+      description: "API documentation for SyntaxWear E-commerce platform",
+      version: "1.0.0",
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+        description: "Local development server",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "Enter your JWT token in the format: Bearer",
+        },
+      },
+    },
+  },
+});
+
+fastify.register(scalar, {
+  routePrefix: "/api-docs",
+  configuration: {
+    theme: 'default',
+  }
+})
 
 fastify.register(productRoutes, { prefix: "/products" });
 
