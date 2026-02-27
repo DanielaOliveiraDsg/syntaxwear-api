@@ -16,6 +16,12 @@ model User {
   birthDate    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  role         Role    @default(USER)
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Product {
