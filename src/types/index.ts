@@ -16,6 +16,7 @@ export interface AuthRequest {
 export interface RegisterRequest extends AuthRequest {
   firstName: string;
   lastName: string;
-  dateOfBirth?: string;
-  phoneNumber?: string;
+  birthDate?: string;
+  phone?: string;
+  role?: 'USER' | 'ADMIN';
 }
