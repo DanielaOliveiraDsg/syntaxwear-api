@@ -10,12 +10,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['email', 'password', 'firstName', 'lastName'],
         properties: {
-          email: { type: 'string', format: 'email', description: 'User email address'},
-          password: { type: 'string', minLength: 6, description: 'User password' },
+          email: { type: 'string', description: 'User email address'},
+          password: { type: 'string', description: 'User password' },
           firstName: { type: 'string', description: 'User first name'},
           lastName: { type: 'string', description: 'User last name'},
           phone: { type: 'string', description: 'User phone number'},
-          birthDate: { type: 'string', format: 'date', description: 'User birth date'},
+          birthDate: { type: 'string', description: 'User birth date'},
         }
       },
       response: {
@@ -66,7 +66,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['email', 'password'],
         properties: {
-          email: { type: 'string', format: 'email', description: 'User email address'},
+          email: { type: 'string', description: 'User email address'},
           password: { type: 'string', description: 'User password' }
         }
       },
