@@ -1,6 +1,7 @@
 import { prisma } from "../utils/prisma";
 import { ProductFilter } from "../types";
 
+// GET - list of products with filters, pagination, and sorting
 export const getProducts = async (filter: ProductFilter) => {
   const {
     minPrice,
@@ -67,4 +68,17 @@ export const getProducts = async (filter: ProductFilter) => {
       totalPages: Math.ceil(total / take),
     },
   };
+};
+
+// GET BY ID - specific product (READ)
+export const getProductById = async (id: string) => {
+  const product = await prisma.product.findUnique({
+    where: { id }
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  return product;
 };

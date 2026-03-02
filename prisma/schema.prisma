@@ -32,7 +32,7 @@ model Product {
   price       Decimal     @db.Decimal(10, 2)
   currency    String       @default("USD")
   images      String[] // URLs
-  sizes       Json?
+  sizes       Json?    // e.g., ["S", "M", "L", "XL"]
   colors      Json?
   stock       Int         @default(0)
   active      Boolean     @default(true)
