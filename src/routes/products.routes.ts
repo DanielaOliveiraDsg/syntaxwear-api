@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { createProduct, getProduct, listProducts } from "../controllers/products.controller";
+import { createProduct, getProduct, listProducts, updateProduct } from "../controllers/products.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
@@ -168,7 +168,101 @@ export default async function productRoutes(fastify: FastifyInstance) {
           },
         },
       },
+      response: {
+        201: {
+          description: 'Product created successfully',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        401: {
+          description: 'Unauthorized',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+      }
     }
-  }, createProduct)
-}
+  }, createProduct);
 
+  // PUT - update a product
+  fastify.put('/:id', {
+    schema: {
+      tags: ['Products'],
+      description: 'Update a product',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          description: { type: 'string' },
+          price: { type: 'number' },
+          colors: { type: 'array', items: { type: 'string' } },
+          stock: { type: 'number' },
+          sizes: { type: 'array', items: { type: 'string' } },
+          active: { type: 'boolean' },
+          images: {
+            type: 'array',
+            items: { type: 'string'},
+          },
+        },
+      },
+      response: {
+        200: {
+          description: 'Products was updated successfully',
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            description: { type: 'string' },
+            price: { type: 'number' },
+            colors: { type: 'array', items: { type: 'string' } },
+            stock: { type: 'number' },
+            sizes: { type: 'array', items: { type: 'string' } },
+            images: {
+              type: 'array',
+              items: { type: 'string', format: 'uri' },
+            },
+            createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        401: {
+          description: 'Unauthorized',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        404: {
+          description: 'Not Found',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+      }
+    }
+  }, updateProduct);
+}

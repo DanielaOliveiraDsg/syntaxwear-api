@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma";
-import { CreateProductType, ProductFilter } from "../types";
+import { CreateProductType, ProductFilter, UpdateProductType } from "../types";
 
 // GET - list of products with filters, pagination, and sorting
 export const getProducts = async (filter: ProductFilter) => {
@@ -97,3 +97,30 @@ export const saveProduct = async (data: CreateProductType) => {
   const newProduct = await prisma.product.create({ data });
   return newProduct;
 };
+
+// UPDATE - modify an existing product (UPDATE)
+export const SaveUpdatedProduct = async (id: string, data: UpdateProductType) => {
+  const existingProduct = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!existingProduct) {
+    throw new Error("Product not found");
+  }
+
+  if(data.slug){
+    const slugConflict = await prisma.product.findUnique({
+      where: { slug: data.slug },
+    });
+
+    if (slugConflict && slugConflict.id !== id) {
+      throw new Error("Another product with this slug already exists");
+    }
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id },
+    data,
+  })
+  return updatedProduct;
+}

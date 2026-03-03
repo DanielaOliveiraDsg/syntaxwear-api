@@ -36,3 +36,15 @@ export const createProductSchema = z.object({
   active: z.boolean(),
   images: z.array(z.string()).optional(),
 });
+
+export const updateProductSchema = z.object({
+  name: z.string().min(1, "Product name is required").optional(),
+  description: z.string().min(1, "Product description is required").optional(),
+  price: z.coerce.number().nonnegative("Price must be a non-negative number").optional(),
+  colors: z.array(z.string()).optional(),
+  stock: z.coerce.number().int().nonnegative("Stock must be a non-negative integer").optional(),
+  sizes: z.array(z.string()).optional(),
+  slug: z.string().min(1, "Slug id is required").optional(),
+  active: z.boolean().optional(),
+  images: z.array(z.string()).optional(),
+})

@@ -30,4 +30,13 @@ export interface CreateProductType {
   sizes?: string[];
   stock: number;
   images?: string[];
+  active: boolean;
+}
+
+export interface UpdateProductType extends Partial<CreateProductType> {
+  name?: string;
+  slug?: string;
+  description?: string;
+  price?: number;
+  stock?: number;
 }
