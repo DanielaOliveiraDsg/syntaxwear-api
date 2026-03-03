@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { getProduct, listProducts } from "../controllers/products.controller";
+import { createProduct, getProduct, listProducts } from "../controllers/products.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  fastify.addHook("onRequest", authMiddleware);
+  //fastify.addHook("onRequest", authMiddleware);
   // get products
   fastify.get(
     "/",
@@ -145,4 +145,30 @@ export default async function productRoutes(fastify: FastifyInstance) {
     },
     getProduct,
   );
+
+  // POST - create a new product
+  fastify.post('/', {
+    schema: {
+      tags: ['Products'],
+      description: 'Create a new product',
+      required: ['name', 'description', 'price', 'slug', 'active', 'stock'],
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          description: { type: 'string' },
+          price: { type: 'number' },
+          colors: { type: 'array', items: { type: 'string' } },
+          stock: { type: 'number' },
+          sizes: { type: 'array', items: { type: 'string' } },
+          active: { type: 'boolean' },
+          images: {
+            type: 'array',
+            items: { type: 'string'},
+          },
+        },
+      },
+    }
+  }, createProduct)
 }
+

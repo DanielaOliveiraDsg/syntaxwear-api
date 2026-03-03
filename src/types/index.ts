@@ -20,3 +20,14 @@ export interface RegisterRequest extends AuthRequest {
   phone?: string;
   role?: 'USER' | 'ADMIN';
 }
+
+export interface CreateProductType {
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  colors?: string[];
+  sizes?: string[];
+  stock: number;
+  images?: string[];
+}
