@@ -40,3 +40,4 @@ export interface UpdateProductType extends Partial<CreateProductType> {
   price?: number;
   stock?: number;
 }
+

@@ -67,6 +67,19 @@ fastify.register(scalar, {
   }
 })
 
+// globally strip JSON content-type on empty bodies (esp. DELETE requests) to avoid parser errors
+fastify.addHook('preParsing', (request, reply, payload, done) => {
+  // if client sent application/json without any body, fastify will throw 400 before handlers
+  if (
+    request.method === 'DELETE' &&
+    request.headers['content-type']?.includes('application/json') &&
+    (!request.headers['content-length'] || request.headers['content-length'] === '0')
+  ) {
+    delete request.headers['content-type'];
+  }
+  done();
+});
+
 fastify.register(productRoutes, { prefix: "/products" });
 
 fastify.register(authRoutes, { prefix: "/auth" });

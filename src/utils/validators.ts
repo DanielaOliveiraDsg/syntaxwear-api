@@ -48,3 +48,7 @@ export const updateProductSchema = z.object({
   active: z.boolean().optional(),
   images: z.array(z.string()).optional(),
 })
+
+export const deleteProductSchema = z.object({
+  id: z.string().min(1, "Product ID is required"),
+})

@@ -99,7 +99,7 @@ export const saveProduct = async (data: CreateProductType) => {
 };
 
 // UPDATE - modify an existing product (UPDATE)
-export const SaveUpdatedProduct = async (id: string, data: UpdateProductType) => {
+export const saveUpdatedProduct = async (id: string, data: UpdateProductType) => {
   const existingProduct = await prisma.product.findUnique({
     where: { id },
   });
@@ -123,4 +123,21 @@ export const SaveUpdatedProduct = async (id: string, data: UpdateProductType) =>
     data,
   })
   return updatedProduct;
+}
+
+// DELETE - delete a existing product
+export const saveDeletedProduct = async (id: string)=>{
+  const product = await prisma.product.findUnique({
+    where: {id},
+  });
+
+  if(!product) {
+    throw new Error("Product not found")
+  }
+
+  await prisma.product.update({
+    where: {id},
+    data: { active: false },
+  })
+
 }
