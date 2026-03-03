@@ -9,7 +9,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  //fastify.addHook("onRequest", authMiddleware);
+  fastify.addHook("onRequest", authMiddleware);
   // get products
   fastify.get(
     "/",
