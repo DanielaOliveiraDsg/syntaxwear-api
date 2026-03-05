@@ -1,4 +1,5 @@
 import z from "zod";
+import { ca } from "zod/locales";
 
 export const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -35,6 +36,7 @@ export const createProductSchema = z.object({
   slug: z.string().min(1, "Slug id is required"),
   active: z.boolean(),
   images: z.array(z.string()).optional(),
+  categoryId: z.string().min(1, "Category ID is required"),
 });
 
 export const updateProductSchema = z.object({

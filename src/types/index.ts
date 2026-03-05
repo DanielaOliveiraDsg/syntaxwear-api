@@ -31,6 +31,7 @@ export interface CreateProductType {
   stock: number;
   images?: string[];
   active: boolean;
+  categoryId: string;
 }
 
 export interface UpdateProductType extends Partial<CreateProductType> {
