@@ -9,7 +9,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  fastify.addHook("onRequest", authMiddleware);
+  // fastify.addHook("onRequest", authMiddleware);
   // get products
   fastify.get(
     "/",
@@ -27,6 +27,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
             search: { type: "string" },
             sortBy: { type: "string", enum: ["price", "name", "createdAt"] },
             sortOrder: { type: "string", enum: ["asc", "desc"] },
+            categoryId: { type: "string" },
           },
         },
         response: {
@@ -49,6 +50,15 @@ export default async function productRoutes(fastify: FastifyInstance) {
                     images: {
                       type: "array",
                       items: { type: "string", format: "uri" },
+                    },
+                    categoryId: { type: "string" },
+                    category: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        name: { type: "string" },
+                        slug: { type: "string" },
+                      }
                     },
                     createdAt: { type: "string", format: "date-time" },
                   },
@@ -116,6 +126,19 @@ export default async function productRoutes(fastify: FastifyInstance) {
               description: { type: "string" },
               price: { type: "number" },
               colors: { type: "array", items: { type: "string" } },
+              categoryId: { type: "string" },
+              category: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  name: { type: "string" },
+                  slug: { type: "string" },
+                  description: { type: "string" },
+                  active: { type: "boolean" },
+                  createdAt: { type: "string", format: "date-time" },
+                  updatedAt: { type: "string", format: "date-time" },
+                },
+              },
               stock: { type: "number" },
               sizes: { type: "array", items: { type: "string" } },
               images: {
@@ -159,7 +182,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Products"],
         description: "Create a new product",
-        required: ["name", "description", "price", "slug", "active", "stock"],
+        required: ["name", "description", "price", "slug", "active", "stock", "categoryId"],
         body: {
           type: "object",
           properties: {
@@ -174,6 +197,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               type: "array",
               items: { type: "string" },
             },
+            categoryId: { type: "string" },
           },
         },
         response: {
@@ -232,6 +256,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               type: "array",
               items: { type: "string" },
             },
+            categoryId: { type: "string" },
           },
         },
         response: {

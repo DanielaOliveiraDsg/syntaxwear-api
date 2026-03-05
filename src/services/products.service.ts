@@ -7,6 +7,7 @@ export const getProducts = async (filter: ProductFilter) => {
     minPrice,
     maxPrice,
     search,
+    categoryId,
     page = 1,
     limit = 10,
     sortBy = "createdAt",
@@ -17,6 +18,10 @@ export const getProducts = async (filter: ProductFilter) => {
   const where: any = {
     active: true, // Only fetch active products by default
   };
+
+  if (categoryId) {
+    where.categoryId = categoryId;
+  }
 
   // Then your code checks: "Did the user provide a minPrice or maxPrice?" If yes, it executes this line: where.price = {}; This creates a new object for the price field in the where clause. Now, instead of just filtering by active: true, your query can also filter by price conditions.
   // Then, you add the specific Prisma filters (gte for "Greater Than or Equal", lte for "Less Than or Equal"): if (minPrice !== undefined) where.price.gte = minPrice;
@@ -55,6 +60,15 @@ export const getProducts = async (filter: ProductFilter) => {
       },
       skip,
       take,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        }
+      }
     }),
     prisma.product.count({ where }),
   ]);
@@ -74,6 +88,9 @@ export const getProducts = async (filter: ProductFilter) => {
 export const getProductById = async (id: string) => {
   const product = await prisma.product.findUnique({
     where: { id },
+    include: {
+      category: true,
+    },
   });
 
   if (!product) {

@@ -24,6 +24,14 @@ export const productFilterSchema = z.object({
   search: z.string().optional(),
   sortBy: z.enum(["price", "name", "createdAt"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
+  categoryId: z.string().optional(),
+});
+
+export const categoryFilterSchema = z.object({
+  page: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().optional(),
+  search: z.string().optional(),
+  active: z.coerce.boolean().optional(),
 });
 
 export const createProductSchema = z.object({

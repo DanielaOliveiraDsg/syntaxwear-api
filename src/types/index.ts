@@ -6,6 +6,14 @@ export interface ProductFilter {
   search?: string;
   sortBy?: "price" | "name" | "createdAt";
   sortOrder?: "asc" | "desc";
+  categoryId?: string;
+}
+
+export interface CategoryFilter {
+  page?: number;
+  limit?: number;
+  search?: string;
+  active?: boolean;
 }
 
 export interface AuthRequest {

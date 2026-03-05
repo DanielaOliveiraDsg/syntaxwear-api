@@ -79,5 +79,5 @@ export const deleteProduct = async (
 
   await saveDeletedProduct(validate.id);
 
-  return reply.status(200).send({ message: "Product deleted successfully" });
+  return reply.status(204);
 };

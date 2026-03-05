@@ -46,14 +46,14 @@
 
 | File                                                                       | Purpose                                                               |
 | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [src/app.ts](src/app.ts)                                                   | Fastify setup: plugins, hooks, global error handler, health endpoints |
-| [src/routes/](src/routes/)                                                 | Endpoint definitions with full OpenAPI schemas for /docs              |
-| [src/controllers/](src/controllers/)                                       | HTTP handlers: validate, call services, format responses              |
-| [src/services/](src/services/)                                             | Business logic; services don't know about HTTP                        |
-| [src/utils/validators.ts](src/utils/validators.ts)                         | All Zod schemas (auth, products, filters)                             |
-| [src/types/index.ts](src/types/index.ts)                                   | TypeScript interfaces for requests/responses                          |
-| [src/middlewares/error.middleware.ts](src/middlewares/error.middleware.ts) | Global error catch (Zod + Fastify + generic)                          |
-| [prisma/schema.prisma](prisma/schema.prisma)                               | DB schema: User (CUID, role-based), Product (slug-unique)             |
+| app                                                   | Fastify setup: plugins, hooks, global error handler, health endpoints |
+| routes                                               | Endpoint definitions with full OpenAPI schemas for /docs              |
+| controllers                                      | HTTP handlers: validate, call services, format responses              |
+| services                                           | Business logic; services don't know about HTTP                        |
+| validators                         | All Zod schemas (auth, products, filters)                             |
+| types                                  | TypeScript interfaces for requests/responses                          |
+| middlewares | Global error catch (Zod + Fastify + generic)                          |
+| schemas                              | DB schema: User (CUID, role-based), Product (slug-unique)             | 
 
 ## Developer Workflows
 
