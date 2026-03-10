@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getCategory, listCategories, createNewCategory, updateCategory } from "../controllers/categories.controller";
+import { getCategory, listCategories, createNewCategory, updateCategory, removeCategory } from "../controllers/categories.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
@@ -249,5 +249,61 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       },
     },
     updateCategory
+  );
+
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["Categories"],
+        description: "Delete a category by ID",
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+          },
+          required: ["id"],
+        },
+        response: {
+          204: {
+            description: "Category deleted successfully",
+            type: "null",
+          },
+          400: {
+            description: "Bad Request",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
+            },
+            required: ["message"],
+            additionalProperties: true,
+          },
+          401: {
+            description: "Unauthorized",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          404: {
+            description: "Not Found",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    removeCategory
   );
 }

@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types";
-import { getCategories, getCategoryById, createCategory, saveUpdatedCategory } from "../services/categories.service";
-import { categoryFilterSchema, createCategorySchema, updateCategorySchema } from "../utils/validators";
+import { getCategories, getCategoryById, createCategory, saveUpdatedCategory, deleteCategory } from "../services/categories.service";
+import { categoryFilterSchema, createCategorySchema, updateCategorySchema, deleteCategorySchema } from "../utils/validators";
 import slugify from "slugify";
 
 export const listCategories = async (
@@ -47,4 +47,13 @@ export const updateCategory = async (
   const category = await saveUpdatedCategory(id, validate);
 
   return reply.status(200).send(category);
+};
+
+export const removeCategory = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) => {
+  const { id } = deleteCategorySchema.parse(request.params);
+  await deleteCategory(id);
+  return reply.status(204).send();
 };

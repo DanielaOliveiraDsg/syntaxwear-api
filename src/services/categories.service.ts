@@ -1,13 +1,12 @@
 import { prisma } from "../utils/prisma";
-import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types";
+import {
+  CategoryFilter,
+  CreateCategoryType,
+  UpdateCategoryType,
+} from "../types";
 
 export const getCategories = async (filter: CategoryFilter) => {
-  const {
-    search,
-    active,
-    page = 1,
-    limit = 10,
-  } = filter;
+  const { search, active, page = 1, limit = 10 } = filter;
 
   const where: any = {};
 
@@ -33,8 +32,8 @@ export const getCategories = async (filter: CategoryFilter) => {
       skip,
       take,
       orderBy: {
-        name: 'asc'
-      }
+        name: "asc",
+      },
     }),
     prisma.category.count({ where }),
   ]);
@@ -55,9 +54,9 @@ export const getCategoryById = async (id: string) => {
     where: { id },
     include: {
       _count: {
-        select: { products: true }
-      }
-    }
+        select: { products: true },
+      },
+    },
   });
 
   if (!category) {
@@ -83,23 +82,26 @@ export const createCategory = async (data: CreateCategoryType) => {
   return category;
 };
 
-export const saveUpdatedCategory = async (id: string, data: UpdateCategoryType) => {
+export const saveUpdatedCategory = async (
+  id: string,
+  data: UpdateCategoryType,
+) => {
   const existingCategory = await prisma.category.findUnique({
     where: { id },
   });
 
-  if(!existingCategory) {
+  if (!existingCategory) {
     throw new Error("Category not found");
   }
 
-  if(data.slug) {
+  if (data.slug) {
     const slugConflict = await prisma.category.findFirst({
       where: {
         slug: data.slug,
-      }
+      },
     });
 
-    if(slugConflict && slugConflict.id !== id) {
+    if (slugConflict && slugConflict.id !== id) {
       throw new Error("Another category with this slug already exists");
     }
   }
@@ -110,4 +112,32 @@ export const saveUpdatedCategory = async (id: string, data: UpdateCategoryType) 
   });
 
   return updatedCategory;
-}
+};
+
+export const deleteCategory = async (id: string) => {
+  const category = await prisma.category.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: { products: true },
+      },
+    },
+  });
+
+  if (!category) {
+    throw new Error("Category not found");
+  }
+
+  if (category._count.products > 0) {
+    throw new Error("Cannot delete category with associated products");
+  }
+
+  await prisma.category.update({
+    where: { id },
+    data: {
+      active: false,
+    },
+  });
+
+  return { success: true };
+};

@@ -76,3 +76,7 @@ export const updateCategorySchema = z.object({
   description: z.string().optional(),
   active: z.boolean().optional(),
 })
+
+export const deleteCategorySchema = z.object({
+  id: z.string().min(1, "Category ID is required"),
+})
