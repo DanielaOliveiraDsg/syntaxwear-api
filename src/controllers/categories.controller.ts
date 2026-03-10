@@ -1,7 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CategoryFilter, CreateCategoryType } from "../types";
-import { getCategories, getCategoryById, createCategory } from "../services/categories.service";
-import { categoryFilterSchema, createCategorySchema } from "../utils/validators";
+import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types";
+import { getCategories, getCategoryById, createCategory, saveUpdatedCategory } from "../services/categories.service";
+import { categoryFilterSchema, createCategorySchema, updateCategorySchema } from "../utils/validators";
+import slugify from "slugify";
 
 export const listCategories = async (
   request: FastifyRequest<{ Querystring: CategoryFilter }>,
@@ -28,4 +29,22 @@ export const createNewCategory = async (
   const data = createCategorySchema.parse(request.body);
   const category = await createCategory(data);
   return reply.status(201).send(category);
+};
+
+export const updateCategory = async (
+  request: FastifyRequest<{ Params: { id: string }; Body: UpdateCategoryType }>,
+  reply: FastifyReply,
+) => {
+  const { id } = request.params;
+  const body = request.body;
+
+  const validate = updateCategorySchema.parse(body);
+
+  if (validate.name) {
+    validate.slug = slugify(validate.name, { lower: true, strict: true });
+  }
+
+  const category = await saveUpdatedCategory(id, validate);
+
+  return reply.status(200).send(category);
 };

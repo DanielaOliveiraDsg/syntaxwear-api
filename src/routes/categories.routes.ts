@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getCategory, listCategories, createNewCategory } from "../controllers/categories.controller";
+import { getCategory, listCategories, createNewCategory, updateCategory } from "../controllers/categories.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
@@ -152,7 +152,18 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
             },
+            required: ["message"],
+            additionalProperties: true,
           },
           401: {
             description: "Unauthorized",
@@ -165,5 +176,78 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       },
     },
     createNewCategory
+  );
+
+  fastify.put(
+    "/:id",
+    {
+      schema: {
+        tags: ["Categories"],
+        description: "Update an existing category",
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+          },
+          required: ["id"],
+        },
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            active: { type: "boolean" },
+          },
+        },
+        response: {
+          200: {
+            description: "Category updated successfully",
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              slug: { type: "string" },
+              description: { type: "string" },
+              active: { type: "boolean" },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+            },
+          },
+          400: {
+            description: "Bad Request",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
+            },
+            required: ["message"],
+            additionalProperties: true,
+          },
+          401: {
+            description: "Unauthorized",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          404: {
+            description: "Not Found",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    updateCategory
   );
 }

@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma";
-import { CategoryFilter, CreateCategoryType } from "../types";
+import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types";
 
 export const getCategories = async (filter: CategoryFilter) => {
   const {
@@ -82,3 +82,32 @@ export const createCategory = async (data: CreateCategoryType) => {
 
   return category;
 };
+
+export const saveUpdatedCategory = async (id: string, data: UpdateCategoryType) => {
+  const existingCategory = await prisma.category.findUnique({
+    where: { id },
+  });
+
+  if(!existingCategory) {
+    throw new Error("Category not found");
+  }
+
+  if(data.slug) {
+    const slugConflict = await prisma.category.findFirst({
+      where: {
+        slug: data.slug,
+      }
+    });
+
+    if(slugConflict && slugConflict.id !== id) {
+      throw new Error("Another category with this slug already exists");
+    }
+  }
+
+  const updatedCategory = await prisma.category.update({
+    where: { id },
+    data,
+  });
+
+  return updatedCategory;
+}
