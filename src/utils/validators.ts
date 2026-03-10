@@ -62,3 +62,17 @@ export const updateProductSchema = z.object({
 export const deleteProductSchema = z.object({
   id: z.string().min(1, "Product ID is required"),
 })
+
+export const createCategorySchema = z.object({
+  name: z.string().min(1, "Category name is required"),
+  slug: z.string().min(1, "Slug is required"),
+  description: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
+export const updateCategorySchema = z.object({
+  name: z.string().min(1, "Category name is required").optional(),
+  slug: z.string().min(1, "Slug is required").optional(),
+  description: z.string().optional(),
+  active: z.boolean().optional(),
+})

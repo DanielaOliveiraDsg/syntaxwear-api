@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getCategory, listCategories } from "../controllers/categories.controller";
+import { getCategory, listCategories, createNewCategory } from "../controllers/categories.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
@@ -115,5 +115,55 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       },
     },
     getCategory
+  );
+
+  fastify.post(
+    "/",
+    {
+      schema: {
+        tags: ["Categories"],
+        description: "Create a new category",
+        body: {
+          type: "object",
+          required: ["name", "slug"],
+          properties: {
+            name: { type: "string" },
+            slug: { type: "string" },
+            description: { type: "string" },
+            active: { type: "boolean" },
+          },
+        },
+        response: {
+          201: {
+            description: "Category created successfully",
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              slug: { type: "string" },
+              description: { type: "string" },
+              active: { type: "boolean" },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+            },
+          },
+          400: {
+            description: "Bad Request",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          401: {
+            description: "Unauthorized",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    createNewCategory
   );
 }

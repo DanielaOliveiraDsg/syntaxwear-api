@@ -50,3 +50,14 @@ export interface UpdateProductType extends Partial<CreateProductType> {
   stock?: number;
 }
 
+export interface CreateCategoryType {
+  name: string;
+  slug: string;
+  description?: string;
+  active?: boolean;
+}
+
+export interface UpdateCategoryType extends Partial<CreateCategoryType> {
+  name?: string;
+  slug?: string;
+}

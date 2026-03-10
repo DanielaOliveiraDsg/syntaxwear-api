@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CategoryFilter } from "../types";
-import { getCategories, getCategoryById } from "../services/categories.service";
-import { categoryFilterSchema } from "../utils/validators";
+import { CategoryFilter, CreateCategoryType } from "../types";
+import { getCategories, getCategoryById, createCategory } from "../services/categories.service";
+import { categoryFilterSchema, createCategorySchema } from "../utils/validators";
 
 export const listCategories = async (
   request: FastifyRequest<{ Querystring: CategoryFilter }>,
@@ -19,4 +19,13 @@ export const getCategory = async (
   const { id } = request.params;
   const category = await getCategoryById(id);
   return reply.status(200).send(category);
+};
+
+export const createNewCategory = async (
+  request: FastifyRequest<{ Body: CreateCategoryType }>,
+  reply: FastifyReply
+) => {
+  const data = createCategorySchema.parse(request.body);
+  const category = await createCategory(data);
+  return reply.status(201).send(category);
 };
