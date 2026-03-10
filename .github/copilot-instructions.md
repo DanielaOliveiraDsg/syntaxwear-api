@@ -44,16 +44,16 @@
 
 ## File Reference & Examples
 
-| File                                                                       | Purpose                                                               |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| app                                                   | Fastify setup: plugins, hooks, global error handler, health endpoints |
-| routes                                               | Endpoint definitions with full OpenAPI schemas for /docs              |
-| controllers                                      | HTTP handlers: validate, call services, format responses              |
-| services                                           | Business logic; services don't know about HTTP                        |
-| validators                         | All Zod schemas (auth, products, filters)                             |
-| types                                  | TypeScript interfaces for requests/responses                          |
+| File        | Purpose                                                               |
+| ----------- | --------------------------------------------------------------------- |
+| app         | Fastify setup: plugins, hooks, global error handler, health endpoints |
+| routes      | Endpoint definitions with full OpenAPI schemas for /docs              |
+| controllers | HTTP handlers: validate, call services, format responses              |
+| services    | Business logic; services don't know about HTTP                        |
+| validators  | All Zod schemas (auth, products, filters)                             |
+| types       | TypeScript interfaces for requests/responses                          |
 | middlewares | Global error catch (Zod + Fastify + generic)                          |
-| schemas                              | DB schema: User (CUID, role-based), Product (slug-unique)             | 
+| schemas     | DB schema: User (CUID, role-based), Product (slug-unique)             |
 
 ## Developer Workflows
 
@@ -88,3 +88,9 @@ npx prisma db push                           # Quick dev schema sync (no migrati
 5. Role field defaults to `USER`; check with `request.server.jwt.verify()` for authorization
 6. HTTP status codes: 201 (created), 200 (success), 401 (auth), 400 (validation), 404 (not found), 500 (server error)
 7. Keep services domain-specific: no HTTP status codes or request/reply objects
+
+## Copilot Assistant Behavior
+
+- When asked for the assistant's name, respond with **"GitHub Copilot"**.
+- When asked about the model being used, respond with **"Raptor mini (Preview)"**.
+- Follow the workspace-specific tool usage and instruction formats; keep answers concise and focused.

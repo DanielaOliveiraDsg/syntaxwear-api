@@ -2,6 +2,7 @@ import "dotenv/config";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import bcrypt from "bcrypt";
 
 // 1. Setup the connection pool
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -12,6 +13,22 @@ const adapter = new PrismaPg(pool);
 // 3. Initialize the client with the adapter
 const prisma = new PrismaClient({ adapter });
 
+const users = [
+  {
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
+    password: "password123",
+    role: "USER" as const,
+  },
+  {
+    firstName: "Admin",
+    lastName: "User",
+    email: "admin@syntaxwear.com",
+    password: "adminpassword",
+    role: "ADMIN" as const,
+  },
+];
 
 const categories = [
   {
@@ -232,6 +249,26 @@ const products = [
 async function main() {
   console.log("🌱 Start seeding...");
 
+  // Seed users
+  console.log("\n👤 Seeding users...");
+  const userMap: { [key: string]: string } = {};
+  for (const userData of users) {
+    const { password, ...rest } = userData;
+    const passwordHash = bcrypt.hashSync(password, 10);
+    const user = await prisma.user.upsert({
+      where: { email: userData.email },
+      update: {
+        passwordHash,
+      },
+      create: {
+        ...rest,
+        passwordHash,
+      },
+    });
+    userMap[userData.email] = user.id;
+    console.log(`  - Created/Updated user: ${user.email} (${user.id})`);
+  }
+
   // Seed categories first
   console.log("\n📂 Seeding categories...");
   const categoryMap: { [key: string]: string } = {};
@@ -250,6 +287,7 @@ async function main() {
 
   // Seed products
   console.log("\n👕 Seeding products...");
+  const productMap: { [key: string]: any } = {};
   for (const productData of products) {
     // Replace category slug with actual category ID
     const categorySlug = productData.categoryId as string;
@@ -260,7 +298,69 @@ async function main() {
       update: { categoryId },
       create: { ...productData, categoryId },
     });
+    productMap[product.slug] = product;
     console.log(`  - Created/Updated product: ${product.name} (${product.id})`);
+  }
+
+  // Seed orders
+  console.log("\n📦 Seeding orders...");
+  const johnDoeId = userMap["john@example.com"];
+  if (johnDoeId) {
+    const hoodie = productMap["syntax-classic-hoodie"];
+    const tee = productMap["debug-mode-tee"];
+    const beanie = productMap["binary-code-beanie"];
+
+    if (hoodie && tee && beanie) {
+      // Order 1: Paid
+      const hoodiePrice = new Prisma.Decimal(hoodie.price);
+      const teePrice = new Prisma.Decimal(tee.price);
+      const order1Total = hoodiePrice.add(teePrice.mul(2));
+
+      await prisma.order.create({
+        data: {
+          userId: johnDoeId,
+          status: "PAID",
+          total: order1Total,
+          items: {
+            create: [
+              {
+                productId: hoodie.id,
+                quantity: 1,
+                unitPrice: hoodiePrice,
+                totalPrice: hoodiePrice,
+              },
+              {
+                productId: tee.id,
+                quantity: 2,
+                unitPrice: teePrice,
+                totalPrice: teePrice.mul(2),
+              },
+            ],
+          },
+        },
+      });
+
+      // Order 2: Pending
+      const beaniePrice = new Prisma.Decimal(beanie.price);
+      await prisma.order.create({
+        data: {
+          userId: johnDoeId,
+          status: "PENDING",
+          total: beaniePrice,
+          items: {
+            create: [
+              {
+                productId: beanie.id,
+                quantity: 1,
+                unitPrice: beaniePrice,
+                totalPrice: beaniePrice,
+              },
+            ],
+          },
+        },
+      });
+      console.log(`  - Created 2 orders for John Doe`);
+    }
   }
 
   console.log("\n✅ Seeding finished.");
