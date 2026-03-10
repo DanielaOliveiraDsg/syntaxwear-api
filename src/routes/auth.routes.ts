@@ -44,8 +44,16 @@ export default async function authRoutes(fastify: FastifyInstance) {
           description: 'Bad Request',
           type: 'object',
           properties: {
-            message: { type: 'string' }
-          }
+            message: { type: 'string' },
+            errors: {
+              oneOf: [
+                {type: 'object', additionalProperties: true},
+                {type: 'array', items: { type: 'object', additionalProperties: true}}
+              ]
+            }
+          },
+          required: ['message'],
+          additionalProperties: true
         },
         409: {
           description: 'Conflict - User already exists',
@@ -96,8 +104,16 @@ export default async function authRoutes(fastify: FastifyInstance) {
           description: 'Bad Request',
           type: 'object',
           properties: {
-            message: { type: 'string' }
-          }
+            message: { type: 'string' },
+            errors: {
+              oneOf: [
+                {type: 'object', additionalProperties: true},
+                {type: 'array', items: { type: 'object', additionalProperties: true}}
+              ]
+            }
+          },
+          required: ['message'],
+          additionalProperties: true
         },
         401: {
           description: 'Unauthorized - Invalid credentials',

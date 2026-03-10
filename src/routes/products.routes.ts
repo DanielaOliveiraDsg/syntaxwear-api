@@ -9,7 +9,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  // fastify.addHook("onRequest", authMiddleware);
+  fastify.addHook("onRequest", authMiddleware);
   // get products
   fastify.get(
     "/",
@@ -58,7 +58,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
                         id: { type: "string" },
                         name: { type: "string" },
                         slug: { type: "string" },
-                      }
+                      },
                     },
                     createdAt: { type: "string", format: "date-time" },
                   },
@@ -87,7 +87,18 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
             },
+            required: ["message"],
+            additionalProperties: true,
           },
           404: {
             description: "Not Found",
@@ -153,7 +164,18 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
             },
+            required: ["message"],
+            additionalProperties: true,
           },
           401: {
             description: "Unauthorized",
@@ -182,7 +204,15 @@ export default async function productRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Products"],
         description: "Create a new product",
-        required: ["name", "description", "price", "slug", "active", "stock", "categoryId"],
+        required: [
+          "name",
+          "description",
+          "price",
+          "slug",
+          "active",
+          "stock",
+          "categoryId",
+        ],
         body: {
           type: "object",
           properties: {
@@ -213,7 +243,18 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
             },
+            required: ["message"],
+            additionalProperties: true,
           },
           401: {
             description: "Unauthorized",
@@ -283,7 +324,18 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
             },
+            required: ["message"],
+            additionalProperties: true,
           },
           401: {
             description: "Unauthorized",
@@ -341,7 +393,18 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: "object",
             properties: {
               message: { type: "string" },
+              errors: {
+                oneOf: [
+                  { type: "object", additionalProperties: true },
+                  {
+                    type: "array",
+                    items: { type: "object", additionalProperties: true },
+                  },
+                ],
+              },
             },
+            required: ["message"],
+            additionalProperties: true,
           },
           401: {
             description: "Unauthorized",
