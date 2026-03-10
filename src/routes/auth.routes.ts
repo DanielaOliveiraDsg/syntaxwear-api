@@ -12,6 +12,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         properties: {
           email: { type: 'string', description: 'User email address'},
           password: { type: 'string', description: 'User password' },
+          role: { type: 'string', enum: ['USER', 'ADMIN'], description: 'User role' },
           firstName: { type: 'string', description: 'User first name'},
           lastName: { type: 'string', description: 'User last name'},
           phone: { type: 'string', description: 'User phone number'},

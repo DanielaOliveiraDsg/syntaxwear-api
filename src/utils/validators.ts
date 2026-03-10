@@ -4,6 +4,7 @@ import { ca } from "zod/locales";
 export const loginSchema = z.object({
   email: z.email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+  role: z.enum(["USER", "ADMIN"]).optional(),
 });
 
 export const registerSchema = z.object({
@@ -13,7 +14,7 @@ export const registerSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   birthDate: z.string().optional(),
   phone: z.string().optional(),
-  role: z.enum(["USER", "ADMIN"]).optional(),
+  role: z.enum(["USER", "ADMIN"]),
 });
 
 export const productFilterSchema = z.object({
@@ -80,3 +81,25 @@ export const updateCategorySchema = z.object({
 export const deleteCategorySchema = z.object({
   id: z.string().min(1, "Category ID is required"),
 })
+
+export const createOrderItemSchema = z.object({
+  productId: z.string().min(1, "Product ID is required"),
+  quantity: z.number().int().positive("Quantity must be at least 1"),
+});
+
+export const createOrderSchema = z.object({
+  items: z.array(createOrderItemSchema).min(1, "At least one item is required"),
+});
+
+export const updateOrderStatusSchema = z.object({
+  status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED"]),
+});
+
+export const orderFilterSchema = z.object({
+  page: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().optional(),
+  status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED"]).optional(),
+  userId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});

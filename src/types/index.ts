@@ -61,3 +61,34 @@ export interface UpdateCategoryType extends Partial<CreateCategoryType> {
   name?: string;
   slug?: string;
 }
+
+export interface CreateOrderItemType {
+  productId: string;
+  quantity: number;
+}
+
+export interface CreateOrderType {
+  items: CreateOrderItemType[];
+}
+
+export interface UpdateOrderStatusType {
+  status: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED";
+}
+
+export interface OrderFilter {
+  page?: number;
+  limit?: number;
+  status?: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED";
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+declare module "fastify" {
+  interface FastifyRequest {
+    user: {
+      userId: string;
+      role: string;
+    };
+  }
+}

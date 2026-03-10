@@ -13,6 +13,7 @@ export const register = async (
 
   const token = request.server.jwt.sign({
     userId: user.id,
+    role: user.role,
   });
   reply.status(201).send({ user, token });
 };
@@ -27,6 +28,7 @@ export const login = async (
 
   const token = request.server.jwt.sign({
     userId: user.id,
+    role: user.role,
   });
   reply.status(200).send({ user, token });
 };
