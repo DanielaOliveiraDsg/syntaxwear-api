@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { size } from "zod";
 import { ca } from "zod/locales";
 
 export const loginSchema = z.object({
@@ -85,20 +85,36 @@ export const deleteCategorySchema = z.object({
 export const createOrderItemSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
   quantity: z.number().int().positive("Quantity must be at least 1"),
+  size: z.string().optional()
+});
+
+export const shippingAddressSchema = z.object({
+  zipcode: z.string().min(1, "Zipcode is required"),
+  street: z.string().min(1, "Street is required"),
+  number: z.string().min(1, "Number is required"),
+  complement: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  country: z.string().min(1, "Country is required"),
 });
 
 export const createOrderSchema = z.object({
   items: z.array(createOrderItemSchema).min(1, "At least one item is required"),
+  shippingAddress: shippingAddressSchema,
+  paymentMethod: z.string().min(1, "Payment method is required"),
 });
 
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED"]),
+  status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED", "DELIVERED"]).optional(),
+  shippingAddress: shippingAddressSchema.optional(),
+}).refine(data => data.status || data.shippingAddress, {
+  message: "At least one field (status or shippingAddress) must be provided",
 });
 
 export const orderFilterSchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().optional(),
-  status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED"]).optional(),
+  status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED", "DELIVERED"]).optional(),
   userId: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),

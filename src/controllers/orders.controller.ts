@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { OrderFilter } from "../types";
-import { getOrders, getOrderById } from "../services/orders.service";
-import { orderFilterSchema } from "../utils/validators";
+import { getOrders, getOrderById, createOrder, updateOrderStatus } from "../services/orders.service";
+import { orderFilterSchema, createOrderSchema, updateOrderStatusSchema } from "../utils/validators";
 
 export const listOrders = async (
   request: FastifyRequest<{ Querystring: OrderFilter }>,
@@ -29,5 +29,33 @@ export const getOrder = async (
   // ADMIN can see any order, regular USER can only see their own
   const order = await getOrderById(id, role === "ADMIN" ? undefined : userId);
   
+  return reply.status(200).send(order);
+};
+
+export const createOrderHandler = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const body = createOrderSchema.parse(request.body);
+  const { userId } = request.user as any;
+
+  const order = await createOrder({
+    ...body,
+    userId,
+  });
+
+  return reply.status(201).send(order);
+};
+
+export const updateOrderHandler = async (
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) => {
+  const { id } = request.params;
+  const body = updateOrderStatusSchema.parse(request.body);
+  const { userId, role } = request.user as any;
+
+  const order = await updateOrderStatus(id, body as any, userId, role);
+
   return reply.status(200).send(order);
 };

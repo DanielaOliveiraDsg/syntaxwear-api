@@ -65,20 +65,35 @@ export interface UpdateCategoryType extends Partial<CreateCategoryType> {
 export interface CreateOrderItemType {
   productId: string;
   quantity: number;
+  size?: string;
 }
 
 export interface CreateOrderType {
+  userId: string;
   items: CreateOrderItemType[];
+  shippingAddress: ShippingAddress;
+  paymentMethod: string;
+}
+
+export interface ShippingAddress {
+  zipcode: string;
+  street: string;
+  number: string;
+  complement?: string;
+  city: string;
+  state: string;
+  country: string;
 }
 
 export interface UpdateOrderStatusType {
-  status: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED";
+status: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED" | "DELIVERED";
+  shippingAddress?: ShippingAddress;
 }
 
 export interface OrderFilter {
   page?: number;
   limit?: number;
-  status?: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED";
+  status?: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED" | "DELIVERED";
   userId?: string;
   startDate?: string;
   endDate?: string;
