@@ -22,7 +22,7 @@ export const registerUser = async (payload: RegisterRequest) => {
       lastName: payload.lastName,
       birthDate: payload.birthDate ? new Date(payload.birthDate) : null,
       phone: payload.phone,
-      role: payload.role || 'USER',
+      role: 'USER',
     },
   });
   return newUser;

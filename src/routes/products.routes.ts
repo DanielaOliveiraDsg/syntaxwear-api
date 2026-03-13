@@ -7,11 +7,12 @@ import {
   deleteProduct,
 } from "../controllers/products.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { adminMiddleware } from "../middlewares/admin.middleware";
+import { CreateProductType, ProductFilter, UpdateProductType } from "../types";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  fastify.addHook("onRequest", authMiddleware);
   // get products
-  fastify.get(
+  fastify.get<{ Querystring: ProductFilter }>(
     "/",
     {
       schema: {
@@ -75,13 +76,6 @@ export default async function productRoutes(fastify: FastifyInstance) {
               },
             },
           },
-          401: {
-            description: "Unauthorized",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-            },
-          },
           400: {
             description: "Bad Request",
             type: "object",
@@ -114,7 +108,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
   );
 
   // get product by id
-  fastify.get(
+  fastify.get<{ Params: { id: string } }>(
     "/:id",
     {
       schema: {
@@ -177,13 +171,6 @@ export default async function productRoutes(fastify: FastifyInstance) {
             required: ["message"],
             additionalProperties: true,
           },
-          401: {
-            description: "Unauthorized",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-            },
-          },
           404: {
             description: "Not Found",
             type: "object",
@@ -198,25 +185,27 @@ export default async function productRoutes(fastify: FastifyInstance) {
   );
 
   // POST - create a new product
-  fastify.post(
+  fastify.post<{ Body: CreateProductType }>(
     "/",
     {
+      onRequest: [authMiddleware, adminMiddleware],
       schema: {
         tags: ["Products"],
         description: "Create a new product",
-        required: [
-          "name",
-          "description",
-          "price",
-          "slug",
-          "active",
-          "stock",
-          "categoryId",
-        ],
+        security: [{ bearerAuth: [] }],
         body: {
           type: "object",
+          required: [
+            "name",
+            "description",
+            "price",
+            "active",
+            "stock",
+            "categoryId",
+          ],
           properties: {
             name: { type: "string" },
+            slug: { type: "string" },
             description: { type: "string" },
             price: { type: "number" },
             colors: { type: "array", items: { type: "string" } },
@@ -260,7 +249,14 @@ export default async function productRoutes(fastify: FastifyInstance) {
             description: "Unauthorized",
             type: "object",
             properties: {
-              message: { type: "string" },
+              error: { type: "string" },
+            },
+          },
+          403: {
+            description: "Forbidden. Admin access required.",
+            type: "object",
+            properties: {
+              error: { type: "string" },
             },
           },
         },
@@ -270,12 +266,14 @@ export default async function productRoutes(fastify: FastifyInstance) {
   );
 
   // PUT - update a product
-  fastify.put(
+  fastify.put<{ Params: { id: string }; Body: UpdateProductType }>(
     "/:id",
     {
+      onRequest: [authMiddleware, adminMiddleware],
       schema: {
         tags: ["Products"],
         description: "Update a product",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -287,6 +285,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
           type: "object",
           properties: {
             name: { type: "string" },
+            slug: { type: "string" },
             description: { type: "string" },
             price: { type: "number" },
             colors: { type: "array", items: { type: "string" } },
@@ -301,7 +300,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
           },
         },
         response: {
-          200: {
+          201: {
             description: "Products was updated successfully",
             type: "object",
             properties: {
@@ -341,7 +340,14 @@ export default async function productRoutes(fastify: FastifyInstance) {
             description: "Unauthorized",
             type: "object",
             properties: {
-              message: { type: "string" },
+              error: { type: "string" },
+            },
+          },
+          403: {
+            description: "Forbidden. Admin access required.",
+            type: "object",
+            properties: {
+              error: { type: "string" },
             },
           },
           404: {
@@ -358,12 +364,14 @@ export default async function productRoutes(fastify: FastifyInstance) {
   );
 
   // DELETE - delete a product
-  fastify.delete(
+  fastify.delete<{ Params: { id: string } }>(
     "/:id",
     {
+      onRequest: [authMiddleware, adminMiddleware],
       schema: {
         tags: ["Products"],
         description: "Delete a product",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -381,12 +389,9 @@ export default async function productRoutes(fastify: FastifyInstance) {
           nullable: true,
         },
         response: {
-          200: {
+          204: {
             description: "Product deleted successfully",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-            },
+            type: "null",
           },
           400: {
             description: "Bad Request",
@@ -410,7 +415,14 @@ export default async function productRoutes(fastify: FastifyInstance) {
             description: "Unauthorized",
             type: "object",
             properties: {
-              message: { type: "string" },
+              error: { type: "string" },
+            },
+          },
+          403: {
+            description: "Forbidden. Admin access required.",
+            type: "object",
+            properties: {
+              error: { type: "string" },
             },
           },
           404: {
@@ -426,3 +438,4 @@ export default async function productRoutes(fastify: FastifyInstance) {
     deleteProduct,
   );
 }
+

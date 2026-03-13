@@ -14,7 +14,6 @@ export const registerSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   birthDate: z.string().optional(),
   phone: z.string().optional(),
-  role: z.enum(["USER", "ADMIN"]),
 });
 
 export const productFilterSchema = z.object({

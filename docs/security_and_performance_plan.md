@@ -1,8 +1,8 @@
 # Security and Performance Audit & Improvement Plan
 
-**Date**: March 12, 2026  
-**Project**: SyntaxWear API (Fastify + Prisma + PostgreSQL)  
-**Status**: Comprehensive Review and Roadmap  
+**Date**: March 12, 2026
+**Project**: SyntaxWear API (Fastify + Prisma + PostgreSQL)
+**Status**: Comprehensive Review and Roadmap
 
 ## Executive Summary
 
@@ -14,14 +14,28 @@ This document outlines findings from a comprehensive security and performance au
 
 ### 1.1 Critical Findings
 
-#### Authorization Vulnerabilities
+#### Authorization Vulnerabilities ----- DONE -----
 - **Registration Role Assignment**: Client-supplied roles accepted during registration, allowing privilege escalation. Users can self-assign `ADMIN` role.
 - **Missing Route Protection**: Not all sensitive routes enforce `authMiddleware` consistently. Category and product creation/updates lack admin authorization checks.
 - **No Admin-Only Middleware**: Authorization logic scattered across controllers; no centralized pattern for admin-only operations.
 
 **Impact**: High - Unauthorized access to privileged operations (create/edit products, categories, orders).
+**Solution**:
+  - Registration Role Assignment Fix: Modified src/services/auth.service.ts and src/utils/validators.ts to ensure users are always assigned the
+     USER role during registration, even if they attempt to supply an ADMIN role in the request.
+  - Centralized Admin Middleware: Created src/middlewares/admin.middleware.ts to provide a consistent way to protect routes that require
+     administrative privileges.
+  - Route Protection Audit & Update:
+  - Categories: Secured POST, PUT, and DELETE routes in src/routes/categories.routes.ts with authMiddleware and adminMiddleware.
+  - Products: Removed global authMiddleware from src/routes/products.routes.ts and applied it selectively alongside adminMiddleware for create,
+         update, and delete operations, while keeping read access public.
+  - Validation & Types: Updated RegisterRequest in src/types/index.ts and the registration route schema in src/routes/auth.routes.ts to remove the
+     role field from the expected client input.
+  - Verification: Confirmed with a script that users cannot self-assign ADMIN roles and are forbidden from accessing protected administrative
+     endpoints.
 
 #### Authentication & Secrets
+
 - **JWT_SECRET Not Validated**: Application starts without verifying `JWT_SECRET` environment variable exists, risking insecure defaults.
 - **Error Information Leakage**: Zod validation errors and unhandled exceptions may expose sensitive system details in production responses.
 
@@ -167,7 +181,7 @@ Priority: **Medium** – Improves scalability and user experience.
       categoryId String
       @@index([categoryId])
     }
-    
+
     model Order {
       // ... existing fields
       userId String
@@ -175,7 +189,7 @@ Priority: **Medium** – Improves scalability and user experience.
       @@index([userId])
       @@index([status])
     }
-    
+
     model OrderItem {
       orderId String
       @@index([orderId])
@@ -332,6 +346,6 @@ Priority: **Medium-Low** – Enables proactive issue detection.
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: March 12, 2026  
+**Document Version**: 1.0
+**Last Updated**: March 12, 2026
 **Next Review**: After Phase 1 completion (1 week)

@@ -26,7 +26,6 @@ export interface RegisterRequest extends AuthRequest {
   lastName: string;
   birthDate?: string;
   phone?: string;
-  role?: 'USER' | 'ADMIN';
 }
 
 export interface CreateProductType {

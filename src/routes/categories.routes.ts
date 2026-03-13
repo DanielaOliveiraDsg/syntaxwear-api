@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { getCategory, listCategories, createNewCategory, updateCategory, removeCategory } from "../controllers/categories.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { adminMiddleware } from "../middlewares/admin.middleware";
+import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types";
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
-  // fastify.addHook("onRequest", authMiddleware);
-
-  fastify.get(
+  fastify.get<{ Querystring: CategoryFilter }>(
     "/",
     {
       schema: {
@@ -33,7 +33,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
                     id: { type: "string" },
                     name: { type: "string" },
                     slug: { type: "string" },
-                    description: { type: "string" },
+                    description: { type: "string", nullable: true },
                     active: { type: "boolean" },
                     createdAt: { type: "string", format: "date-time" },
                     updatedAt: { type: "string", format: "date-time" },
@@ -51,20 +51,13 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
               },
             },
           },
-          401: {
-            description: "Unauthorized",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-            },
-          },
         },
       },
     },
     listCategories
   );
 
-  fastify.get(
+  fastify.get<{ Params: { id: string } }>(
     "/:id",
     {
       schema: {
@@ -85,7 +78,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
               id: { type: "string" },
               name: { type: "string" },
               slug: { type: "string" },
-              description: { type: "string" },
+              description: { type: "string", nullable: true },
               active: { type: "boolean" },
               createdAt: { type: "string", format: "date-time" },
               updatedAt: { type: "string", format: "date-time" },
@@ -95,13 +88,6 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
                   products: { type: "number" },
                 },
               },
-            },
-          },
-          401: {
-            description: "Unauthorized",
-            type: "object",
-            properties: {
-              message: { type: "string" },
             },
           },
           404: {
@@ -117,19 +103,21 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
     getCategory
   );
 
-  fastify.post(
+  fastify.post<{ Body: CreateCategoryType }>(
     "/",
     {
+      onRequest: [authMiddleware, adminMiddleware],
       schema: {
         tags: ["Categories"],
         description: "Create a new category",
+        security: [{ bearerAuth: [] }],
         body: {
           type: "object",
           required: ["name", "slug"],
           properties: {
             name: { type: "string" },
             slug: { type: "string" },
-            description: { type: "string" },
+            description: { type: "string", nullable: true },
             active: { type: "boolean" },
           },
         },
@@ -141,7 +129,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
               id: { type: "string" },
               name: { type: "string" },
               slug: { type: "string" },
-              description: { type: "string" },
+              description: { type: "string", nullable: true },
               active: { type: "boolean" },
               createdAt: { type: "string", format: "date-time" },
               updatedAt: { type: "string", format: "date-time" },
@@ -169,7 +157,14 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             description: "Unauthorized",
             type: "object",
             properties: {
-              message: { type: "string" },
+              error: { type: "string" },
+            },
+          },
+          403: {
+            description: "Forbidden. Admin access required.",
+            type: "object",
+            properties: {
+              error: { type: "string" },
             },
           },
         },
@@ -178,12 +173,14 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
     createNewCategory
   );
 
-  fastify.put(
+  fastify.put<{ Params: { id: string }; Body: UpdateCategoryType }>(
     "/:id",
     {
+      onRequest: [authMiddleware, adminMiddleware],
       schema: {
         tags: ["Categories"],
         description: "Update an existing category",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -195,7 +192,8 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
           type: "object",
           properties: {
             name: { type: "string" },
-            description: { type: "string" },
+            slug: { type: "string" },
+            description: { type: "string", nullable: true },
             active: { type: "boolean" },
           },
         },
@@ -207,7 +205,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
               id: { type: "string" },
               name: { type: "string" },
               slug: { type: "string" },
-              description: { type: "string" },
+              description: { type: "string", nullable: true },
               active: { type: "boolean" },
               createdAt: { type: "string", format: "date-time" },
               updatedAt: { type: "string", format: "date-time" },
@@ -235,7 +233,14 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             description: "Unauthorized",
             type: "object",
             properties: {
-              message: { type: "string" },
+              error: { type: "string" },
+            },
+          },
+          403: {
+            description: "Forbidden. Admin access required.",
+            type: "object",
+            properties: {
+              error: { type: "string" },
             },
           },
           404: {
@@ -251,12 +256,14 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
     updateCategory
   );
 
-  fastify.delete(
+  fastify.delete<{ Params: { id: string } }>(
     "/:id",
     {
+      onRequest: [authMiddleware, adminMiddleware],
       schema: {
         tags: ["Categories"],
         description: "Delete a category by ID",
+        security: [{ bearerAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -291,7 +298,14 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             description: "Unauthorized",
             type: "object",
             properties: {
-              message: { type: "string" },
+              error: { type: "string" },
+            },
+          },
+          403: {
+            description: "Forbidden. Admin access required.",
+            type: "object",
+            properties: {
+              error: { type: "string" },
             },
           },
           404: {
