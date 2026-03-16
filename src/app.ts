@@ -16,12 +16,17 @@ import { errorHandler } from "./middlewares/error.middleware";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
+if (!process.env.JWT_SECRET) {
+  console.error("CRITICAL ERROR: JWT_SECRET environment variable is not defined.");
+  process.exit(1);
+}
+
 const fastify = Fastify({
   logger: true,
 });
 
 fastify.register(jwt,{
-  secret: process.env.JWT_SECRET!
+  secret: process.env.JWT_SECRET
 });
 
 // cors config

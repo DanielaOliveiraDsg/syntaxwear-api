@@ -15,12 +15,13 @@ This document outlines findings from a comprehensive security and performance au
 ### 1.1 Critical Findings
 
 #### Authorization Vulnerabilities ----- DONE -----
+
 - **Registration Role Assignment**: Client-supplied roles accepted during registration, allowing privilege escalation. Users can self-assign `ADMIN` role.
 - **Missing Route Protection**: Not all sensitive routes enforce `authMiddleware` consistently. Category and product creation/updates lack admin authorization checks.
 - **No Admin-Only Middleware**: Authorization logic scattered across controllers; no centralized pattern for admin-only operations.
 
 **Impact**: High - Unauthorized access to privileged operations (create/edit products, categories, orders).
-**Solution**:
+**SOLUTION**:
   - Registration Role Assignment Fix: Modified src/services/auth.service.ts and src/utils/validators.ts to ensure users are always assigned the
      USER role during registration, even if they attempt to supply an ADMIN role in the request.
   - Centralized Admin Middleware: Created src/middlewares/admin.middleware.ts to provide a consistent way to protect routes that require
@@ -34,17 +35,23 @@ This document outlines findings from a comprehensive security and performance au
   - Verification: Confirmed with a script that users cannot self-assign ADMIN roles and are forbidden from accessing protected administrative
      endpoints.
 
-#### Authentication & Secrets
+#### Authentication & Secrets ----- DONE -----
 
 - **JWT_SECRET Not Validated**: Application starts without verifying `JWT_SECRET` environment variable exists, risking insecure defaults.
 - **Error Information Leakage**: Zod validation errors and unhandled exceptions may expose sensitive system details in production responses.
 
 **Impact**: Medium - Configuration bugs and information disclosure.
+**SOLUTION**:
+  - JWT_SECRET Validation: Updated src/app.ts to check for JWT_SECRET at startup. The application now logs a critical error and exits if the variable is missing, preventing insecure defaults.
+  - Error Sanitization: Refactored src/middlewares/error.middleware.ts to sanitize error responses. In production (NODE_ENV=production), internal error details (message, stack) are hidden from the client. Fixed a bug in Zod error formatting (replaced non-existent treeifyError with standard format()).
 
-#### Password Security
+#### Password Security ----- DONE -----
 - **Weak Password Policy**: Current minimum length unclear or insufficient (recommend 12+ characters for OAuth-free API).
 
 **Impact**: Medium - User account compromise via brute force.
+**SOLUTION**:
+  - Hardened Password Policy: Updated `src/utils/validators.ts` to enforce a minimum of 12 characters for both login and registration.
+  - Complexity Requirements: Added regex validation to `registerSchema` requiring at least one lowercase letter, one uppercase letter, one number, and one special character.
 
 #### Network Security
 - **CORS Configuration**: Default or unrestricted CORS origins may allow cross-origin attacks.
@@ -141,7 +148,7 @@ Priority: **Immediate** – Prevents privilege escalation and data breach.
   - Audit `src/routes/*.ts` to verify all non-auth endpoints use `onRequest: [authMiddleware]`
   - Add admin checks to product/category creation/deletion endpoints
 
-- [ ] **Validate JWT_SECRET at startup**
+- [x] **Validate JWT_SECRET at startup**
   - Update `src/app.ts` to throw descriptive error if `JWT_SECRET` missing
   - Example: `if (!process.env.JWT_SECRET) throw Error("JWT_SECRET must be set"`
 
@@ -149,11 +156,11 @@ Priority: **Immediate** – Prevents privilege escalation and data breach.
 
 Priority: **High** – Reduces attack surface and information disclosure.
 
-- [ ] **Harden password policy**
+- [x] **Harden password policy**
   - Update Zod `registerSchema` in `src/utils/validators.ts` to require minimum 12 characters
   - Add complexity requirements if desired (uppercase, numbers, special chars)
 
-- [ ] **Sanitize error responses in production**
+- [x] **Sanitize error responses in production**
   - Modify `src/middlewares/error.middleware.ts` to return generic error messages in production
   - Log full error details internally for debugging
 
