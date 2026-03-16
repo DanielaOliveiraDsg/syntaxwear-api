@@ -53,12 +53,27 @@ This document outlines findings from a comprehensive security and performance au
   - Hardened Password Policy: Updated `src/utils/validators.ts` to enforce a minimum of 12 characters for both login and registration.
   - Complexity Requirements: Added regex validation to `registerSchema` requiring at least one lowercase letter, one uppercase letter, one number, and one special character.
 
-#### Network Security
-- **CORS Configuration**: Default or unrestricted CORS origins may allow cross-origin attacks.
+#### Network Security ----- DONE -----
+- **CORS Configuration**: Default or unrestricted CORS (Cross-Origin Resource Sharing) origins may allow cross-origin attacks.
 - **Missing Rate Limiting**: Auth endpoints vulnerable to credential stuffing and brute force attacks.
-- **No CSRF Protection**: Unclear if CSRF protection is implemented (relevant for session-based operations).
+- **No CSRF Protection**: Unclear if CSRF (Cross-Site Request Forgery) protection is implemented (relevant for session-based operations).
 
-**Impact**: Medium-High - DDoS and credential attack vectors.
+**Impact**: Medium-High - DDoS (Distributed Denial of Service) and credential attack vectors.
+
+**SOLUTION**:
+1. Restricted CORS: Updated src/app.ts to use a whitelist
+      of origins from the ALLOWED_ORIGINS environment
+      variable, while maintaining a fallback for development
+      environments.
+2. Global Rate Limiting: Integrated @fastify/rate-limit to
+      restrict global traffic to 100 requests per minute per
+      IP.
+3. Auth-Specific Rate Limiting: Applied a stricter limit
+      of 5 requests per minute for /auth/login and
+      /auth/register to mitigate brute-force and credential
+      stuffing attacks.
+4. Environment Documentation: Updated .env.example to
+      include the new ALLOWED_ORIGINS configuration.
 
 #### Type Safety
 - **Type Casting with `any`**: Multiple `as any` casts bypass TypeScript safety; unvalidated data may reach services.

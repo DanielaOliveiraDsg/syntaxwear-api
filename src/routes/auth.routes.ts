@@ -3,6 +3,12 @@ import { login, register } from "../controllers/auth.controller";
 
 export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post("/register", {
+    config: {
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute"
+      }
+    },
     schema: {
       tags: ['Auth'],
       description: 'Register a new user and returns a JWT token',
@@ -67,6 +73,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
   }, register)
 
   fastify.post("/login", {
+    config: {
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute"
+      }
+    },
     schema: {
       tags: ['Auth'],
       description: 'Login an existing user and returns a JWT token',

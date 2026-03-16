@@ -5,6 +5,7 @@ import "dotenv/config";
 import Fastify, { FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
+import rateLimit from "@fastify/rate-limit";
 import productRoutes from "./routes/products.routes";
 import categoryRoutes from "./routes/categories.routes";
 import orderRoutes from "./routes/orders.routes";
@@ -30,9 +31,30 @@ fastify.register(jwt,{
 });
 
 // cors config
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:5173"];
+
 fastify.register(cors, {
-  origin: true,
+  origin: (origin, cb) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      cb(null, true);
+      return;
+    }
+
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === "development") {
+      cb(null, true);
+      return;
+    }
+
+    cb(new Error("Not allowed by CORS"), false);
+  },
   credentials: true,
+});
+
+// rate limit config
+fastify.register(rateLimit, {
+  max: 100,
+  timeWindow: "1 minute",
 });
 
 // helmet config
