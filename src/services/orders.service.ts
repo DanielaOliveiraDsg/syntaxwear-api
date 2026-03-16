@@ -1,10 +1,11 @@
 import { prisma } from "../utils/prisma";
-import { OrderFilter, CreateOrderType } from "../types";
+import { OrderFilter, CreateOrderType, UpdateOrderStatusType } from "../types";
+import { Prisma } from "@prisma/client";
 
 export const getOrders = async (filter: OrderFilter) => {
   const { page = 1, limit = 10, status, userId } = filter;
 
-  const where: any = {};
+  const where: Prisma.OrderWhereInput = {};
 
   if (userId) {
     where.userId = userId;
@@ -125,7 +126,7 @@ export const createOrder = async (data: CreateOrderType) => {
         userId,
         status: "PENDING",
         total: orderTotal,
-        shippingAddress: shippingAddress as any,
+        shippingAddress: shippingAddress as unknown as Prisma.InputJsonValue,
         paymentMethod,
         items: {
           create: orderItemsData,
@@ -155,10 +156,7 @@ export const createOrder = async (data: CreateOrderType) => {
 
 export const updateOrderStatus = async (
   id: string,
-  data: {
-    status?: "PENDING" | "PAID" | "SHIPPED" | "CANCELLED" | "DELIVERED";
-    shippingAddress?: any;
-  },
+  data: UpdateOrderStatusType,
   userId?: string,
   role?: string
 ) => {
@@ -193,7 +191,7 @@ export const updateOrderStatus = async (
     where: { id },
     data: { 
       ...(status && { status }),
-      ...(shippingAddress && { shippingAddress: shippingAddress as any }),
+      ...(shippingAddress && { shippingAddress: shippingAddress as unknown as Prisma.InputJsonValue }),
     },
     include: {
       items: {
