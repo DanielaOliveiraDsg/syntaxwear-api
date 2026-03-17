@@ -22,6 +22,26 @@ export const errorHandler = (
     });
   }
 
+  // Handle business logic conflicts
+  if (
+    error.message.includes("already exists") ||
+    error.message.includes("already registered")
+  ) {
+    return reply.status(409).send({
+      message: error.message,
+    });
+  }
+
+  // Handle unauthorized errors
+  if (
+    error.message.includes("not found") ||
+    error.message.includes("Invalid email or password")
+  ) {
+    return reply.status(401).send({
+      message: error.message,
+    });
+  }
+
   // Log the full error for internal monitoring
   request.log.error(error);
 

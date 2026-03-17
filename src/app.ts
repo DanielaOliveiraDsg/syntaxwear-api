@@ -136,12 +136,14 @@ fastify.get("/health", async (request, reply) => {
 fastify.setErrorHandler(errorHandler);
 
 // Run the server!
-fastify.listen({ port: PORT, host: "0.0.0.0" }, function (err, address) {
-  if (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-  // Server is now listening on ${address}
-});
+if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
+  fastify.listen({ port: PORT, host: "0.0.0.0" }, function (err, address) {
+    if (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+    // Server is now listening on ${address}
+  });
+}
 
 export default fastify;
