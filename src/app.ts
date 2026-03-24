@@ -18,7 +18,9 @@ import { errorHandler } from "./middlewares/error.middleware";
 const PORT = parseInt(process.env.PORT ?? "3000");
 
 if (!process.env.JWT_SECRET) {
-  console.error("CRITICAL ERROR: JWT_SECRET environment variable is not defined.");
+  console.error(
+    "CRITICAL ERROR: JWT_SECRET environment variable is not defined.",
+  );
   process.exit(1);
 }
 
@@ -26,12 +28,14 @@ const fastify = Fastify({
   logger: true,
 });
 
-fastify.register(jwt,{
-  secret: process.env.JWT_SECRET
+fastify.register(jwt, {
+  secret: process.env.JWT_SECRET,
 });
 
 // cors config
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:5173"];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? [
+  "http://localhost:5173",
+];
 
 fastify.register(cors, {
   origin: (origin, cb) => {
@@ -41,7 +45,10 @@ fastify.register(cors, {
       return;
     }
 
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === "development") {
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      process.env.NODE_ENV === "development"
+    ) {
       cb(null, true);
       return;
     }
@@ -92,19 +99,20 @@ fastify.register(swagger, {
 fastify.register(scalar, {
   routePrefix: "/docs",
   configuration: {
-    theme: 'default',
-  }
-})
+    theme: "default",
+  },
+});
 
 // globally strip JSON content-type on empty bodies (esp. DELETE requests) to avoid parser errors
-fastify.addHook('preParsing', (request, reply, payload, done) => {
+fastify.addHook("preParsing", (request, reply, payload, done) => {
   // if client sent application/json without any body, fastify will throw 400 before handlers
   if (
-    request.method === 'DELETE' &&
-    request.headers['content-type']?.includes('application/json') &&
-    (!request.headers['content-length'] || request.headers['content-length'] === '0')
+    request.method === "DELETE" &&
+    request.headers["content-type"]?.includes("application/json") &&
+    (!request.headers["content-length"] ||
+      request.headers["content-length"] === "0")
   ) {
-    delete request.headers['content-type'];
+    delete request.headers["content-type"];
   }
   done();
 });
@@ -135,15 +143,7 @@ fastify.get("/health", async (request, reply) => {
 
 fastify.setErrorHandler(errorHandler);
 
-// Run the server!
-if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
-  fastify.listen({ port: PORT, host: "0.0.0.0" }, function (err, address) {
-    if (err) {
-      fastify.log.error(err);
-      process.exit(1);
-    }
-    // Server is now listening on ${address}
-  });
-}
-
-export default fastify;
+// Export the buildApp function
+export const buildApp = async () => {
+  return fastify;
+};
