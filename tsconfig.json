@@ -14,7 +14,7 @@
    "skipLibCheck": true,
    "forceConsistentCasingInFileNames": true,
    "resolveJsonModule": true,
-   "moduleResolution": "bundler",
+   "moduleResolution": "Node",
    "declaration": true,
    "declarationMap": true,
    "sourceMap": true,
