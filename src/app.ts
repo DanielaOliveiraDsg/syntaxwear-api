@@ -77,12 +77,7 @@ fastify.register(swagger, {
       description: "API documentation for SyntaxWear E-commerce platform",
       version: "1.0.0",
     },
-    servers: [
-      {
-        url: `http://localhost:${PORT}`,
-        description: "Local development server",
-      },
-    ],
+    servers: [],
     components: {
       securitySchemes: {
         bearerAuth: {
