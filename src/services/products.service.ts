@@ -1,5 +1,5 @@
-import { prisma } from "../utils/prisma";
-import { CreateProductType, ProductFilter, UpdateProductType } from "../types";
+import { prisma } from "../utils/prisma.js";
+import { CreateProductType, ProductFilter, UpdateProductType } from "../types/index.js";
 
 // GET - list of products with filters, pagination, and sorting
 export const getProducts = async (filter: ProductFilter) => {

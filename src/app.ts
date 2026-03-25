@@ -24,7 +24,7 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 
-const fastify = Fastify({
+export const fastify = Fastify({
   logger: true,
 });
 

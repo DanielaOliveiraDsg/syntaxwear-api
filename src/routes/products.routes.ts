@@ -5,10 +5,10 @@ import {
   listProducts,
   updateProduct,
   deleteProduct,
-} from "../controllers/products.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { adminMiddleware } from "../middlewares/admin.middleware";
-import { CreateProductType, ProductFilter, UpdateProductType } from "../types";
+} from "../controllers/products.controller.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { adminMiddleware } from "../middlewares/admin.middleware.js";
+import { CreateProductType, ProductFilter, UpdateProductType } from "../types/index.js";
 
 export default async function productRoutes(fastify: FastifyInstance) {
   // get products

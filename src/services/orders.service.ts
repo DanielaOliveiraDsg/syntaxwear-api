@@ -1,5 +1,5 @@
-import { prisma } from "../utils/prisma";
-import { OrderFilter, CreateOrderType, UpdateOrderStatusType } from "../types";
+import { prisma } from "../utils/prisma.js";
+import { OrderFilter, CreateOrderType, UpdateOrderStatusType } from "../types/index.js";
 import { Prisma } from "@prisma/client";
 
 export const getOrders = async (filter: OrderFilter) => {
@@ -189,7 +189,7 @@ export const updateOrderStatus = async (
 
   const updatedOrder = await prisma.order.update({
     where: { id },
-    data: { 
+    data: {
       ...(status && { status }),
       ...(shippingAddress && { shippingAddress: shippingAddress as unknown as Prisma.InputJsonValue }),
     },

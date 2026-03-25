@@ -1,8 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types";
-import { getCategories, getCategoryById, createCategory, saveUpdatedCategory, deleteCategory } from "../services/categories.service";
-import { categoryFilterSchema, createCategorySchema, updateCategorySchema, deleteCategorySchema } from "../utils/validators";
-import slugify from "slugify";
+import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types/index.js";
+import { getCategories, getCategoryById, createCategory, saveUpdatedCategory, deleteCategory } from "../services/categories.service.js";
+import { categoryFilterSchema, createCategorySchema, updateCategorySchema, deleteCategorySchema } from "../utils/validators.js";
+import _slugify from "slugify";
+
+const slugify = _slugify as unknown as (str: string, options?: any) => string;
 
 export const listCategories = async (
   request: FastifyRequest<{ Querystring: CategoryFilter }>,

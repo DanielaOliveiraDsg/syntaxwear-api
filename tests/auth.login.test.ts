@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll, beforeAll } from 'vitest';
-import fastify from '../src/app';
+import { fastify } from '../src/app';
 import { prisma } from '../src/utils/prisma';
 
 describe('Auth Login', () => {

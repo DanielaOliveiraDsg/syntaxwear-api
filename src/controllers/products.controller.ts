@@ -1,22 +1,23 @@
-//usign fastify
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateProductType, ProductFilter, UpdateProductType } from "../types";
+import { CreateProductType, ProductFilter, UpdateProductType } from "../types/index.js";
 import {
   getProductById,
   getProducts,
   saveDeletedProduct,
   saveProduct,
   saveUpdatedProduct,
-} from "../services/products.service";
+} from "../services/products.service.js";
 import {
   productFilterSchema,
   createProductSchema,
   updateProductSchema,
   deleteProductSchema,
-} from "../utils/validators";
-import { request } from "node:http";
-import slugify from "slugify";
-import { error } from "node:console";
+} from "../utils/validators.js";
+
+import _slugify from "slugify";
+
+const slugify = _slugify as unknown as (str: string, options?: any) => string;
+
 
 export const listProducts = async (
   request: FastifyRequest<{ Querystring: ProductFilter }>,
