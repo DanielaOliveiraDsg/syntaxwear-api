@@ -44,6 +44,7 @@ export const createProductSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
   price: z.coerce.number().nonnegative("Price must be a non-negative number"),
+  gender: z.enum(["MEN", "WOMEN", "UNISEX"]).default("UNISEX"),
   colors: z.array(z.string()).optional(),
   stock: z.coerce.number().int().nonnegative("Stock must be a non-negative integer"),
   sizes: z.array(z.string()).optional(),

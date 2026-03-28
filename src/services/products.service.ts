@@ -1,5 +1,9 @@
 import { prisma } from "../utils/prisma.js";
-import { CreateProductType, ProductFilter, UpdateProductType } from "../types/index.js";
+import {
+  CreateProductType,
+  ProductFilter,
+  UpdateProductType,
+} from "../types/index.js";
 
 // GET - list of products with filters, pagination, and sorting
 export const getProducts = async (filter: ProductFilter) => {
@@ -8,13 +12,13 @@ export const getProducts = async (filter: ProductFilter) => {
     maxPrice,
     search,
     categoryId,
+    gender,
     page = 1,
     limit = 10,
     sortBy = "createdAt",
     sortOrder = "desc",
   } = filter;
 
-  // Initially, your object looks like this:
   const where: any = {
     active: true, // Only fetch active products by default
   };
@@ -23,19 +27,14 @@ export const getProducts = async (filter: ProductFilter) => {
     where.categoryId = categoryId;
   }
 
-  // Then your code checks: "Did the user provide a minPrice or maxPrice?" If yes, it executes this line: where.price = {}; This creates a new object for the price field in the where clause. Now, instead of just filtering by active: true, your query can also filter by price conditions.
-  // Then, you add the specific Prisma filters (gte for "Greater Than or Equal", lte for "Less Than or Equal"): if (minPrice !== undefined) where.price.gte = minPrice;
+  if (gender) where.gender = gender;
 
-  // when you call prisma.product.findMany({ where }), you are passing that entire object you just built. Prisma looks at the object and says: "Okay, I need to generate SQL that looks for products where active is true AND price is >= minPrice
   if (minPrice !== undefined || maxPrice !== undefined) {
-    where.price = {}; // If you use the equals sign (=), JS looks for that property. If it doesn't find it, it creates it on the fly.
+    where.price = {};
     if (minPrice !== undefined) where.price.gte = minPrice;
     if (maxPrice !== undefined) where.price.lte = maxPrice;
   }
 
-  // In SQL (the language your Supabase database speaks), OR is used to say: "Find me items where Condition A is true OR Condition B is true."
-  // By writing where.OR = [...], you are telling Prisma:"Hey, update my 'Shopping List' of conditions. I want you to look for the search term inside the name field OR inside the description field."
-  // Prisma expects OR to be an array because you might want to compare 2, 3, or even 10 different columns. Each object inside that array is one "possibility."
   if (search) {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
@@ -48,10 +47,9 @@ export const getProducts = async (filter: ProductFilter) => {
 
   // Execute Multiple Queries in Parallel
   // Promise.all runs both queries at the same time to save time.
-  // Performance: Using Promise.all is much faster than awaiting the count and then awaiting the data separately.
-  // User Experience: By returning meta (specifically totalPages), your React frontend can easily disable the "Next" button when the user reaches the end.
 
   // The Brackets [products, total]: Since Promise.all returns an array of results, you are telling JavaScript: "Take the first item in the result array and call it 'products', and take the second item and call it 'total'."
+  
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
@@ -66,15 +64,18 @@ export const getProducts = async (filter: ProductFilter) => {
             id: true,
             name: true,
             slug: true,
-          }
-        }
-      }
+          },
+        },
+      },
     }),
     prisma.product.count({ where }),
   ]);
 
   return {
-    products,
+    products: products.map((p) => ({
+      ...p,
+      price: Number(p.price), // Convert Decimal to Number for the frontend
+    })),
     meta: {
       total,
       page: Number(page),
@@ -97,12 +98,14 @@ export const getProductById = async (id: string) => {
     throw new Error("Product not found");
   }
 
-  return product;
+  return {
+    ...product,
+    price: Number(product.price),
+  };
 };
 
 // CREATE - add a new product (CREATE)
 export const saveProduct = async (data: CreateProductType) => {
-
   const existingProduct = await prisma.product.findUnique({
     where: { slug: data.slug },
   });
@@ -116,7 +119,10 @@ export const saveProduct = async (data: CreateProductType) => {
 };
 
 // UPDATE - modify an existing product (UPDATE)
-export const saveUpdatedProduct = async (id: string, data: UpdateProductType) => {
+export const saveUpdatedProduct = async (
+  id: string,
+  data: UpdateProductType,
+) => {
   const existingProduct = await prisma.product.findUnique({
     where: { id },
   });
@@ -125,7 +131,7 @@ export const saveUpdatedProduct = async (id: string, data: UpdateProductType) =>
     throw new Error("Product not found");
   }
 
-  if(data.slug){
+  if (data.slug) {
     const slugConflict = await prisma.product.findUnique({
       where: { slug: data.slug },
     });
@@ -138,23 +144,22 @@ export const saveUpdatedProduct = async (id: string, data: UpdateProductType) =>
   const updatedProduct = await prisma.product.update({
     where: { id },
     data,
-  })
+  });
   return updatedProduct;
-}
+};
 
 // DELETE - delete a existing product
-export const saveDeletedProduct = async (id: string)=>{
+export const saveDeletedProduct = async (id: string) => {
   const product = await prisma.product.findUnique({
-    where: {id},
+    where: { id },
   });
 
-  if(!product) {
-    throw new Error("Product not found")
+  if (!product) {
+    throw new Error("Product not found");
   }
 
   await prisma.product.update({
-    where: {id},
+    where: { id },
     data: { active: false },
-  })
-
-}
+  });
+};

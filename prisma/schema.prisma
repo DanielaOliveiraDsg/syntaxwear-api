@@ -25,16 +25,23 @@ enum Role {
   ADMIN
 }
 
+enum Gender {
+  MEN
+  WOMEN
+  UNISEX
+}
+
 model Product {
   id          String      @id @default(cuid())
   name        String
   slug        String      @unique
   description String?
+  gender      Gender      @default(UNISEX)
   price       Decimal     @db.Decimal(10, 2)
   currency    String      @default("USD")
-  images      String[] // URLs
-  sizes       Json? // e.g., ["S", "M", "L", "XL"]
-  colors      Json?
+  images      String[]
+  sizes       String[]
+  colors      String[]
   stock       Int         @default(0)
   active      Boolean     @default(true)
   createdAt   DateTime    @default(now())

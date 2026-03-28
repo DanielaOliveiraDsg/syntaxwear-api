@@ -7,6 +7,7 @@ export interface ProductFilter {
   sortBy?: "price" | "name" | "createdAt";
   sortOrder?: "asc" | "desc";
   categoryId?: string;
+  gender?: "MEN" | "WOMEN" | "UNISEX";
 }
 
 export interface CategoryFilter {
@@ -39,6 +40,7 @@ export interface CreateProductType {
   images?: string[];
   active: boolean;
   categoryId: string;
+  gender: "MEN" | "WOMEN" | "UNISEX";
 }
 
 export interface UpdateProductType extends Partial<CreateProductType> {
