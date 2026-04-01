@@ -45,11 +45,7 @@ export const getProducts = async (filter: ProductFilter) => {
   const take = Number(limit);
   const skip = (Number(page) - 1) * take;
 
-  // Execute Multiple Queries in Parallel
-  // Promise.all runs both queries at the same time to save time.
 
-  // The Brackets [products, total]: Since Promise.all returns an array of results, you are telling JavaScript: "Take the first item in the result array and call it 'products', and take the second item and call it 'total'."
-  
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,

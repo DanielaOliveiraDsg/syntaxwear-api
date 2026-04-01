@@ -25,6 +25,7 @@ export const registerSchema = z.object({
 export const productFilterSchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().optional(),
+  gender: z.enum(['MEN', 'WOMEN', 'UNISEX']).optional().catch(undefined),
   minPrice: z.coerce.number().nonnegative().optional(),
   maxPrice: z.coerce.number().nonnegative().optional(),
   search: z.string().optional(),

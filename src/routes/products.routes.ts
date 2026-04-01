@@ -46,6 +46,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
                     description: { type: "string" },
                     price: { type: "number" },
                     colors: { type: "array", items: { type: "string" } },
+                    gender: {type: "string"},
                     stock: { type: "number" },
                     sizes: { type: "array", items: { type: "string" } },
                     images: {
@@ -131,6 +132,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               description: { type: "string" },
               price: { type: "number" },
               colors: { type: "array", items: { type: "string" } },
+              gender: { type: "string" },
               categoryId: { type: "string" },
               category: {
                 type: "object",
@@ -209,6 +211,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
             description: { type: "string" },
             price: { type: "number" },
             colors: { type: "array", items: { type: "string" } },
+            gender: { type: "string" },
             stock: { type: "number" },
             sizes: { type: "array", items: { type: "string" } },
             active: { type: "boolean" },
@@ -289,6 +292,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
             description: { type: "string" },
             price: { type: "number" },
             colors: { type: "array", items: { type: "string" } },
+            gender: { type: "string" },
             stock: { type: "number" },
             sizes: { type: "array", items: { type: "string" } },
             active: { type: "boolean" },
