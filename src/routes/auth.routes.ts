@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { login, register } from "../controllers/auth.controller.js";
+import { login, profile, register } from "../controllers/auth.controller.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post("/register", {
@@ -136,5 +137,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
       }
     }
-  }, login)
+  }, login);
+
+  fastify.get("/profile", {
+    preHandler: [authMiddleware], // protect this route with authentication middleware
+    schema: {
+      tags: ['Auth'],
+      description: 'Get the profile of the authenticated user',
+      security: [{ bearerAuth: [] }],
+    }
+  }, profile);
 }
