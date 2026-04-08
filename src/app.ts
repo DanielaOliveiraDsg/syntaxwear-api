@@ -14,6 +14,7 @@ import scalar from "@scalar/fastify-api-reference";
 import jwt from "@fastify/jwt";
 import authRoutes from "./routes/auth.routes.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
+import fastifyCookie from "@fastify/cookie";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
@@ -28,8 +29,15 @@ export const fastify = Fastify({
   logger: true,
 });
 
+// allow cookies management
+fastify.register(fastifyCookie);
+
 fastify.register(jwt, {
   secret: process.env.JWT_SECRET,
+  cookie: {
+    cookieName: "syntaxwear.token",
+    signed: false,
+  }
 });
 
 // cors config
