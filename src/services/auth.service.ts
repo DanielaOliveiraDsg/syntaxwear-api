@@ -4,7 +4,7 @@ import { prisma } from "../utils/prisma.js";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 
-export const registerUser = async (payload: RegisterRequest) => {
+export const registerUser = async (payload: RegisterRequest, reply: FastifyReply) => {
   //check if user already exists
   const existingUser = await prisma.user.findUnique({
     where: { email: payload.email },
@@ -12,7 +12,8 @@ export const registerUser = async (payload: RegisterRequest) => {
 
   // message for existing user
   if (existingUser) {
-    throw new Error("User with this email already exists");
+    reply.status(409).send({ error: "User with this email already exists" });
+    return;
   }
   const passwordHash = await bcrypt.hash(payload.password, 10);
   // create new user
