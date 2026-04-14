@@ -88,23 +88,18 @@ fastify.register(swagger, {
     servers: [],
     components: {
       securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-          description: "Enter your JWT token in the format: Bearer",
-        },
+        cookieAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'syntaxwear.token'
+        }
       },
     },
+    security: [{ cookieAuth: [] }],
   },
 });
 
-fastify.register(scalar, {
-  routePrefix: "/docs",
-  configuration: {
-    theme: "default",
-  },
-});
+
 
 // globally strip JSON content-type on empty bodies (esp. DELETE requests) to avoid parser errors
 fastify.addHook("preParsing", (request, reply, payload, done) => {
@@ -145,6 +140,13 @@ fastify.get("/health", async (request, reply) => {
 });
 
 fastify.setErrorHandler(errorHandler);
+
+fastify.register(scalar, {
+  routePrefix: "/docs",
+  configuration: {
+    theme: "default",
+  },
+});
 
 // Export the buildApp function
 export const buildApp = async () => {

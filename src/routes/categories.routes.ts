@@ -1,8 +1,18 @@
 import { FastifyInstance } from "fastify";
-import { getCategory, listCategories, createNewCategory, updateCategory, removeCategory } from "../controllers/categories.controller.js";
+import {
+  getCategory,
+  listCategories,
+  createNewCategory,
+  updateCategory,
+  removeCategory,
+} from "../controllers/categories.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { adminMiddleware } from "../middlewares/admin.middleware.js";
-import { CategoryFilter, CreateCategoryType, UpdateCategoryType } from "../types/index.js";
+import {
+  CategoryFilter,
+  CreateCategoryType,
+  UpdateCategoryType,
+} from "../types/index.js";
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
   fastify.get<{ Querystring: CategoryFilter }>(
@@ -54,7 +64,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    listCategories
+    listCategories,
   );
 
   fastify.get<{ Params: { id: string } }>(
@@ -100,7 +110,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    getCategory
+    getCategory,
   );
 
   fastify.post<{ Body: CreateCategoryType }>(
@@ -110,7 +120,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Categories"],
         description: "Create a new category",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         body: {
           type: "object",
           required: ["name", "slug"],
@@ -170,7 +180,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    createNewCategory
+    createNewCategory,
   );
 
   fastify.put<{ Params: { id: string }; Body: UpdateCategoryType }>(
@@ -180,7 +190,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Categories"],
         description: "Update an existing category",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -253,7 +263,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    updateCategory
+    updateCategory,
   );
 
   fastify.delete<{ Params: { id: string } }>(
@@ -263,7 +273,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Categories"],
         description: "Delete a category by ID",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -318,6 +328,6 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         },
       },
     },
-    removeCategory
+    removeCategory,
   );
 }

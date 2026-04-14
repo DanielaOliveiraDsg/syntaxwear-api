@@ -8,7 +8,11 @@ import {
 } from "../controllers/products.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { adminMiddleware } from "../middlewares/admin.middleware.js";
-import { CreateProductType, ProductFilter, UpdateProductType } from "../types/index.js";
+import {
+  CreateProductType,
+  ProductFilter,
+  UpdateProductType,
+} from "../types/index.js";
 
 export default async function productRoutes(fastify: FastifyInstance) {
   // get products
@@ -46,7 +50,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
                     description: { type: "string" },
                     price: { type: "number" },
                     colors: { type: "array", items: { type: "string" } },
-                    gender: {type: "string"},
+                    gender: { type: "string" },
                     stock: { type: "number" },
                     sizes: { type: "array", items: { type: "string" } },
                     images: {
@@ -194,7 +198,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Products"],
         description: "Create a new product",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         body: {
           type: "object",
           required: [
@@ -276,7 +280,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Products"],
         description: "Update a product",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -375,7 +379,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Products"],
         description: "Delete a product",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -442,4 +446,3 @@ export default async function productRoutes(fastify: FastifyInstance) {
     deleteProduct,
   );
 }
-

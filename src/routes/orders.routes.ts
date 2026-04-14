@@ -12,7 +12,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Orders"],
         description: "List orders for the authenticated user",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         querystring: {
           type: "object",
           properties: {
@@ -93,7 +93,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Orders"],
         description: "Get a specific order by ID",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         params: {
           type: "object",
           properties: {
@@ -174,7 +174,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Orders"],
         description: "Create a new order",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         body: {
           type: "object",
           required: ["items", "shippingAddress", "paymentMethod"],
@@ -281,7 +281,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Orders"],
         description: "Update order status",
-        security: [{ bearerAuth: [] }],
+        security: [{ cookieAuth: [] }],
         params: {
           type: "object",
           properties: {
