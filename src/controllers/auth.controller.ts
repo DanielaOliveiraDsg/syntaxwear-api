@@ -3,6 +3,8 @@ import { loginUser, loginWithGoogle, registerUser } from "../services/auth.servi
 import { AuthRequest, RegisterRequest } from "../types/index.js";
 import { loginSchema, registerSchema } from "../utils/validators.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const register = async (
   request: FastifyRequest,
   reply: FastifyReply,
@@ -18,8 +20,8 @@ export const register = async (
 
   reply.setCookie("syntaxwear.token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: "/",
     maxAge: 60 * 60 * 24, // 1 day
   });
@@ -42,8 +44,8 @@ export const login = async (
 
   reply.setCookie("syntaxwear.token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: "/",
     maxAge: 60 * 60 * 24, // 1 day
   });
@@ -73,8 +75,8 @@ export const googleLogin = async (
 
   reply.setCookie("syntaxwear.token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: "/",
     maxAge: 60 * 60 * 24, // 1 day
   });
@@ -88,8 +90,8 @@ export const logout = async (
 ) => {
   reply.clearCookie("syntaxwear.token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: "/",
   });
   reply.status(200).send({ message: "Logged out successfully" });
